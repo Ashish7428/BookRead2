@@ -7,19 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Book extends Model
 {
     protected $fillable = [
-        'author_id',
-        'genre_id',
         'title',
         'slug',
         'description',
+        'author_id',
+        'category_id',
+        'publication_year',
         'cover_image',
         'pdf_path',
-        'publication_year',
-        'status'
-    ];
-
-    protected $casts = [
-        'publication_year' => 'integer',
+        'status',
     ];
 
     public function author()
@@ -27,8 +23,36 @@ class Book extends Model
         return $this->belongsTo(Author::class);
     }
 
-    public function genres()
+    protected $casts = [
+        'title' => 'string',
+        // Remove 'author' => 'string' since we're using relationship
+    ];
+
+    public function getCoverImageAttribute($value)
     {
-        return $this->belongsToMany(Category::class, 'book_genre', 'book_id', 'genre_id');
+        if ($value && file_exists(public_path('storage/' . $value))) {
+            return asset('storage/' . $value);
+        }
+        return asset('images/default-book-cover.jpg');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function readingProgress()
+    {
+        return $this->hasMany(ReadingProgress::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'book_category');
     }
 }

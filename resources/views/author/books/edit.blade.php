@@ -9,7 +9,7 @@
                     <h4 class="mb-0">Edit Book</h4>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('author.books.update', $book) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('author.books.update', $book->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -31,25 +31,26 @@
                             @enderror
                         </div>
 
+                        {{-- Replace the single category dropdown with multiple categories checkboxes --}}
                         <div class="mb-3">
-                            <label class="form-label">Genres</label>
-                            <div class="row g-3 border">
+                            <label class="form-label">Categories</label>
+                            <div class="row g-3 border p-3">
                                 @foreach(\App\Models\Category::orderBy('name')->get() as $category)
                                     <div class="col-md-4">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" 
-                                                name="genres[]" 
+                                                name="categories[]" 
                                                 value="{{ $category->id }}" 
-                                                id="genre{{ $category->id }}"
-                                                {{ in_array($category->id, $book->genres->pluck('id')->toArray()) ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="genre{{ $category->id }}">
+                                                id="category{{ $category->id }}"
+                                                {{ in_array($category->id, old('categories', $book->categories->pluck('id')->toArray() ?? [])) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="category{{ $category->id }}">
                                                 {{ $category->name }}
                                             </label>
                                         </div>
                                     </div>
                                 @endforeach
                             </div>
-                            @error('genres')
+                            @error('categories')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
@@ -81,10 +82,24 @@
                             @enderror
                         </div>
 
-                        <div class="mb-4">
+                        {{-- Remove the duplicate book_file field --}}
+                        <div class="mb-3">
+                            <label for="pdf_file" class="form-label">Book File (PDF)</label>
+                            <input type="file" class="form-control @error('pdf_file') is-invalid @enderror" 
+                                id="pdf_file" name="pdf_file" accept=".pdf">
+                            @if($book->pdf_path)
+                                <small class="text-muted">Current file: {{ basename($book->pdf_path) }}</small>
+                            @endif
+                            @error('pdf_file')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Remove this duplicate section --}}
+                        {{-- <div class="mb-4">
                             <p class="mb-1">Current PDF: {{ basename($book->pdf_path) }}</p>
                             <div class="form-text mb-3">To change the PDF file, please upload a new book.</div>
-                        </div>
+                        </div> --}}
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">

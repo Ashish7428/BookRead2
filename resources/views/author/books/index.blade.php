@@ -19,20 +19,20 @@
         @forelse($books as $book)
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="card h-100">
-                    @if($book->cover_image)
-                        <img src="{{ Storage::url($book->cover_image) }}" class="card-img-top" alt="{{ $book->title }}" style="height: 250px; object-fit: cover;">
-                    @else
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <i class="fas fa-book fa-4x text-muted"></i>
-                        </div>
-                    @endif
+                    <img src="{{ asset($book->cover_image ?? 'images/default-book-cover.jpg') }}" 
+                         class="card-img-top"
+                         alt="{{ $book->title }}"
+                         style="height: 250px; object-fit: cover;">
                     <div class="card-body">
                         <h5 class="card-title">{{ $book->title }}</h5>
-                        <!-- Replace the single genre display with -->
                         <p class="card-text text-muted mb-2">
-                            @foreach($book->genres as $genre)
-                                <span class="badge bg-secondary me-1">{{ $genre->name }}</span>
-                            @endforeach
+                            @forelse($book->categories as $category)
+                                <span class="badge bg-secondary me-1">{{ $category->name }}</span>
+                            @empty
+                                <span class="badge bg-warning text-dark">
+                                    <i class="fas fa-exclamation-circle me-1"></i>No Category
+                                </span>
+                            @endforelse
                         </p>
                         <p class="card-text">{{ Str::limit($book->description, 100) }}</p>
                         
@@ -44,14 +44,14 @@
                         </div>
                     </div>
                     <div class="card-footer bg-transparent">
-                        <div class="btn-group w-100">
-                            <a href="{{ route('author.books.edit', $book) }}" class="btn btn-outline-primary">
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('author.books.edit', $book) }}" class="btn btn-outline-primary flex-grow-1 d-flex align-items-center justify-content-center">
                                 <i class="fas fa-edit me-2"></i>Edit
                             </a>
-                            <form action="{{ route('author.books.destroy', $book) }}" method="POST" class="d-inline">
+                            <form action="{{ route('author.books.destroy', $book) }}" method="POST" class="flex-grow-1 m-0">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to delete this book?')">
+                                <button type="submit" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center" onclick="return confirm('Are you sure you want to delete this book?')">
                                     <i class="fas fa-trash-alt me-2"></i>Delete
                                 </button>
                             </form>
@@ -73,3 +73,5 @@
     </div>
 </div>
 @endsection
+
+{{-- Remove this entire section as it's causing the unwanted text --}}

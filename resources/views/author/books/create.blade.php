@@ -31,24 +31,24 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Genres</label>
-                            <div class="row g-3 border" >
-                                @foreach(\App\Models\Category::orderBy('name')->get() as $category)
+                            <label class="form-label">Categories</label>
+                            <div class="row g-3 border p-3">
+                                @foreach($categories as $category)
                                     <div class="col-md-4">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" 
-                                                name="genres[]" 
+                                                name="categories[]" 
                                                 value="{{ $category->id }}" 
-                                                id="genre{{ $category->id }}"
-                                                {{ in_array($category->id, old('genres', [])) ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="genre{{ $category->id }}">
+                                                id="category{{ $category->id }}"
+                                                {{ in_array($category->id, old('categories', [])) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="category{{ $category->id }}">
                                                 {{ $category->name }}
                                             </label>
                                         </div>
                                     </div>
                                 @endforeach
                             </div>
-                            @error('genres')
+                            @error('categories')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
@@ -57,7 +57,8 @@
                             <label for="publication_year" class="form-label">Publication Year</label>
                             <input type="number" class="form-control @error('publication_year') is-invalid @enderror" 
                                 id="publication_year" name="publication_year" 
-                                value="{{ old('publication_year') }}" min="1900" max="{{ date('Y') }}">
+                                value="{{ old('publication_year') }}" 
+                                min="1900" max="{{ date('Y') }}">
                             @error('publication_year')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
@@ -73,11 +74,11 @@
                             @enderror
                         </div>
 
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label for="pdf_file" class="form-label">PDF File</label>
                             <input type="file" class="form-control @error('pdf_file') is-invalid @enderror" 
                                 id="pdf_file" name="pdf_file" accept="application/pdf" required>
-                            <div class="form-text">Max size: 20MB. Format: PDF only</div>
+                            <div class="form-text">Max size: 20MB. Format: PDF</div>
                             @error('pdf_file')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror

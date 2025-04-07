@@ -18,14 +18,12 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|unique:categories|max:255',
-            'description' => 'nullable|string'
+            'name' => 'required|unique:categories|max:255'
         ]);
 
         Category::create([
             'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'description' => $request->description
+            'slug' => Str::slug($request->name)
         ]);
 
         return redirect()->route('admin.categories.index')
@@ -35,14 +33,12 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $request->validate([
-            'name' => 'required|unique:categories,name,'.$category->id.'|max:255',
-            'description' => 'nullable|string'
+            'name' => 'required|unique:categories,name,'.$category->id.'|max:255'
         ]);
 
         $category->update([
             'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'description' => $request->description
+            'slug' => Str::slug($request->name)
         ]);
 
         return redirect()->route('admin.categories.index')

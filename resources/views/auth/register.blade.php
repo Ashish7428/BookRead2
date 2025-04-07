@@ -3,9 +3,18 @@
 @section('content')
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-6">
+            @if($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                    @foreach($errors->all() as $error)
+                        {{ $error }}<br>
+                    @endforeach
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+            
             <div class="card shadow">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header  text-white" style="background-color:#2c3e50;">
                     <h4 class="mb-0">Register</h4>
                 </div>
                 <div class="card-body">
@@ -13,20 +22,24 @@
                         @csrf
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="first_name" class="form-label">First Name</label>
-                                <input type="text" class="form-control @error('first_name') is-invalid @enderror" 
-                                    id="first_name" name="first_name" value="{{ old('first_name') }}" required>
-                                @error('first_name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <div class="mb-3">
+                                    <label for="first_name" class="form-label">First Name</label>
+                                    <input type="text" class="form-control @error('first_name') is-invalid @enderror" 
+                                        id="first_name" name="first_name" value="{{ old('first_name') }}" required>
+                                    @error('first_name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <label for="last_name" class="form-label">Last Name</label>
-                                <input type="text" class="form-control @error('last_name') is-invalid @enderror" 
-                                    id="last_name" name="last_name" value="{{ old('last_name') }}" required>
-                                @error('last_name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <div class="mb-3">
+                                    <label for="last_name" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control @error('last_name') is-invalid @enderror" 
+                                        id="last_name" name="last_name" value="{{ old('last_name') }}" required>
+                                    @error('last_name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
 
@@ -45,9 +58,9 @@
                                 <select class="form-select @error('gender') is-invalid @enderror" 
                                     id="gender" name="gender" required>
                                     <option value="">Select Gender</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
+                                    <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                                    <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                                    <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
                                 </select>
                                 @error('gender')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -79,7 +92,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <button type="submit" class="btn btn-primary">Register</button>
+                            <button type="submit" class="btn" style="background-color:#2c3e50;color:white;">Register</button>
                         </div>
                     </form>
                 </div>

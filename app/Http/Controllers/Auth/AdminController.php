@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Admin;
 
 class AdminController extends Controller
@@ -42,4 +43,34 @@ class AdminController extends Controller
         
         return view('admin.dashboard', compact('totalBooks', 'pendingBooks', 'totalAuthors'));
     }
+
+    public function updatePassword(Request $request)
+    {
+        try {
+            $request->validate([
+                'current_password' => 'required',
+                'password' => 'required|min:8|confirmed',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->with('error', 'Password confirmation does not match.')
+                        ->with('closeModal', true);
+        }
+    
+        $admin = Auth::guard('admin')->user();
+    
+        if (!Hash::check($request->current_password, $admin->password)) {
+            return back()->with('error', 'The current password is incorrect.')
+                        ->with('closeModal', true);
+        }
+    
+        $admin->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        return back()->with('success', 'Password updated successfully')
+            ->with('closeModal', true);
+    }
+
+
+    
 }

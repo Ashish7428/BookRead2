@@ -37,8 +37,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-users me-2"></i>Author Management
+                        <a class="nav-link" href="{{route('admin.author')}}">
+                            <i class="fas fa-users me-2"></i>Authors 
                         </a>
                     </li>
                 </ul>
@@ -47,16 +47,68 @@
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user-shield me-2"></i>Admin
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <form action="{{ route('admin.logout') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
+                        <!-- Update the dropdown menu items -->
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item text-dark d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                <i class="fas fa-key me-2"></i>Change Password
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <form action="{{ route('admin.logout') }}" method="POST" id="logoutForm">
+                                @csrf
+                                <button type="button" class="dropdown-item text-dark d-flex align-items-center" onclick="confirmLogout()">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Add this at the bottom of the layout file -->
+                        <div class="modal fade" id="changePasswordModal" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Change Password</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    @if(session('success'))
+                                        <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+                                            {{ session('success') }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                        </div>
+                                    @endif
+                                    @if($errors->any())
+                                        <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+                                            <ul class="mb-0">
+                                                @foreach($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                        </div>
+                                    @endif
+                                    <form action="{{ route('admin.password.update') }}" method="POST">
+                                        @csrf
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">Current Password</label>
+                                                <input type="password" class="form-control" name="current_password" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">New Password</label>
+                                                <input type="password" class="form-control" name="password" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Confirm New Password</label>
+                                                <input type="password" class="form-control" name="password_confirmation" required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Update Password</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -64,11 +116,51 @@
     </nav>
 
     <main>
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show m-4" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+        
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show m-4" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+        
         @yield('content')
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @stack('styles')
-    @stack('scripts')
+    @push('scripts')
+        <script>
+            // Add this before your existing scripts
+            @if(session('success') || session('error') || $errors->any() || session('show_password_modal'))
+                document.addEventListener('DOMContentLoaded', function() {
+                    var modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+                    modal.show();
+                });
+            @endif
+        </script>
+        @endpush
+    <script>
+        function confirmLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                document.getElementById('logoutForm').submit();
+            }
+        }
+
+        @if(session('closeModal'))
+            document.addEventListener('DOMContentLoaded', function() {
+                var modal = bootstrap.Modal.getInstance(document.getElementById('changePasswordModal'));
+                if (modal) {
+                    modal.hide();
+                }
+            });
+        @endif
+    </script>
 </body>
 </html>

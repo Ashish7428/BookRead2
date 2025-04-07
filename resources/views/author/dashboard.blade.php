@@ -124,7 +124,7 @@
                                 <tr>
                                     <th>Cover</th>
                                     <th>Title</th>
-                                    <th>Genre</th>
+                                    {{-- <th>Category</th>  <!-- Change from Genre to Category --> --}}
                                     <th>Status</th>
                                     <th>Upload Date</th>
                                     <th>Actions</th>
@@ -135,18 +135,20 @@
                                     <tr>
                                         <td>
                                             @if($book->cover_image)
-                                                <img src="{{ Storage::url($book->cover_image) }}" 
+                                                <img src="{{ $book->cover_image }}" 
                                                     alt="Cover" style="width: 40px; height: 40px; object-fit: cover;">
                                             @else
                                                 <i class="fas fa-book fa-2x text-muted"></i>
                                             @endif
                                         </td>
                                         <td>{{ $book->title }}</td>
-                                        <td>
-                                            @foreach($book->genres as $genre)
-                                                <span class="badge bg-secondary me-1">{{ $genre->name }}</span>
-                                            @endforeach
-                                        </td>
+                                        {{-- <td>
+                                            @if($book->category)
+                                                <span class="badge bg-secondary me-1">{{ $book->category->name }}</span>
+                                            @else
+                                                <span class="text-muted">No category</span>
+                                            @endif
+                                        </td> --}}
                                         <td>
                                             <span class="badge bg-{{ $book->status === 'approved' ? 'success' : ($book->status === 'rejected' ? 'danger' : 'warning') }}">
                                                 {{ ucfirst($book->status) }}

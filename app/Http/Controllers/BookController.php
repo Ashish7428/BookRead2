@@ -3,23 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
-use App\Models\Category;  // Add this at the top with other use statements
+use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;  // Add this line
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class BookController extends Controller
 {
     public function index()
     {
-        $books = auth('author')->user()->books()->latest()->get();
+        $author = Auth::guard('author')->user();
+        
+        if (!$author) {
+            return redirect()->route('author.login');
+        }
+        
+        $books = Book::where('author_id', $author->id)
+                     ->with('categories')  // Load the many-to-many relationship
+                     ->latest()
+                     ->get();
+                     
         return view('author.books.index', compact('books'));
     }
 
     public function create()
     {
-        $genres = Category::orderBy('name')->get();
-        return view('author.books.create', compact('genres'));
+        $categories = Category::orderBy('name')->get();
+        return view('author.books.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -27,97 +39,149 @@ class BookController extends Controller
         $validatedData = $request->validate([
             'title' => 'required|max:255',
             'description' => 'required',
-            'genres' => 'required|array|exists:categories,id',
+            'categories' => 'required|array',
+            'categories.*' => 'exists:categories,id',
             'publication_year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'cover_image' => 'nullable|image|mimes:jpeg,png|max:2048',
             'pdf_file' => 'required|mimes:pdf|max:20480'
         ]);
-
-        $book = new Book();
-        $book->author_id = auth()->id();
-        $book->title = $validatedData['title'];
-        $book->slug = Str::slug($validatedData['title']);
-        $book->description = $validatedData['description'];
-        $book->publication_year = $validatedData['publication_year'];
-
-        if ($request->hasFile('cover_image')) {
-            $coverPath = $request->file('cover_image')->store('covers', 'public');
-            $book->cover_image = $coverPath;
+    
+        try {
+            $book = new Book();
+            $book->author_id = auth('author')->id();
+            $book->title = $validatedData['title'];
+            $book->slug = Str::slug($validatedData['title']);
+            $book->description = $validatedData['description'];
+            $book->category_id = $request->categories[0] ?? null;
+            $book->publication_year = $validatedData['publication_year'];
+            $book->status = 'pending';
+    
+            if ($request->hasFile('cover_image')) {
+                $coverPath = 'covers/' . $request->file('cover_image')->hashName();
+                $request->file('cover_image')->move(public_path('storage/covers'), $request->file('cover_image')->hashName());
+                $book->cover_image = $coverPath;
+            }
+    
+            if ($request->hasFile('pdf_file')) {
+                $pdfPath = 'pdfs/' . $request->file('pdf_file')->hashName();
+                $request->file('pdf_file')->move(public_path('storage/pdfs'), $request->file('pdf_file')->hashName());
+                $book->pdf_path = $pdfPath;
+            }
+    
+            $book->save();
+            $book->categories()->sync($request->categories);
+    
+            return redirect()->route('author.books.index')
+                ->with('success', 'Book uploaded successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Book upload error: ' . $e->getMessage());
+            return back()
+                ->with('error', 'Failed to upload book. Please try again.')
+                ->withInput();
         }
-
-        if ($request->hasFile('pdf_file')) {
-            $pdfPath = $request->file('pdf_file')->store('pdfs', 'public');
-            $book->pdf_path = $pdfPath;
-        }
-
-        $book->save();
-        $book->genres()->attach($request->genres);
-
-        return redirect()->route('author.books.index')
-            ->with('success', 'Book uploaded successfully!');
     }
 
     public function edit(Book $book)
     {
-        // Check if the logged-in author owns this book
         if (auth('author')->id() !== $book->author_id) {
             abort(403);
         }
-
-        $genres = Category::orderBy('name')->get();
-        return view('author.books.edit', compact('book', 'genres'));
+    
+        $categories = Category::orderBy('name')->get();
+        $selectedCategory = $book->category_id ?? null;  // Handle null case
+        
+        return view('author.books.edit', compact('book', 'categories', 'selectedCategory'));
     }
 
     public function update(Request $request, Book $book)
     {
-        // Check if the logged-in author owns this book
         if (auth('author')->id() !== $book->author_id) {
             abort(403);
         }
 
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'genres' => 'required|array|exists:categories,id',  // Updated validation
+        $validatedData = $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'required',
+            'categories' => 'required|array',
+            'categories.*' => 'exists:categories,id',
+            'publication_year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'cover_image' => 'nullable|image|mimes:jpeg,png|max:2048',
-            'publication_year' => 'nullable|date_format:Y|before_or_equal:' . date('Y'),
+            'pdf_file' => 'nullable|mimes:pdf|max:20480'
         ]);
 
-        $data = $request->only(['title', 'description', 'publication_year']);
+        try {
+            $book->title = $validatedData['title'];
+            $book->slug = Str::slug($validatedData['title']);
+            $book->description = $validatedData['description'];
+            $book->category_id = $request->categories[0] ?? null;
+            $book->publication_year = $validatedData['publication_year'];
 
-        // Handle cover image upload
-        if ($request->hasFile('cover_image')) {
-            // Delete old cover image if exists
-            if ($book->cover_image) {
-                Storage::disk('public')->delete($book->cover_image);
+            if ($request->hasFile('cover_image')) {
+                // Delete old cover if exists
+                if ($book->cover_image && Storage::disk('public')->exists($book->cover_image)) {
+                    Storage::disk('public')->delete($book->cover_image);
+                }
+                
+                $coverPath = 'covers/' . $request->file('cover_image')->hashName();
+                $request->file('cover_image')->move(public_path('storage/covers'), $request->file('cover_image')->hashName());
+                $book->cover_image = $coverPath;
             }
-            $data['cover_image'] = $request->file('cover_image')->store('books/covers', 'public');
+
+            if ($request->hasFile('pdf_file')) {
+                // Create directory if it doesn't exist
+                if (!file_exists(public_path('storage/pdfs'))) {
+                    mkdir(public_path('storage/pdfs'), 0777, true);
+                }
+
+                // Delete old PDF if exists
+                if ($book->pdf_path && file_exists(public_path('storage/' . $book->pdf_path))) {
+                    unlink(public_path('storage/' . $book->pdf_path));
+                }
+                
+                $pdfPath = 'pdfs/' . $request->file('pdf_file')->hashName();
+                $request->file('pdf_file')->move(public_path('storage/pdfs'), $request->file('pdf_file')->hashName());
+                $book->pdf_path = $pdfPath;
+            }
+
+            $book->save();
+            $book->categories()->sync($request->categories);
+
+            return redirect()->route('author.books.index')
+                ->with('success', 'Book updated successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Book update error: ' . $e->getMessage());
+            return back()
+                ->with('error', 'Failed to update book. Please try again.')
+                ->withInput();
         }
-
-        $book->update($data);
-        $book->genres()->sync($request->genres);  // Update genres relationship
-
-        return redirect()->route('author.books.index')
-            ->with('success', 'Book updated successfully.');
     }
 
     public function destroy(Book $book)
     {
-        // Check if the logged-in author owns this book
         if (auth('author')->id() !== $book->author_id) {
             abort(403);
         }
 
-        // Delete the physical files first
         if ($book->cover_image) {
             Storage::disk('public')->delete($book->cover_image);
         }
-        Storage::disk('public')->delete($book->pdf_path);
+        if ($book->pdf_path) {
+            Storage::disk('public')->delete($book->pdf_path);
+        }
 
-        // Delete the database record
         $book->delete();
 
         return redirect()->route('author.books.index')
             ->with('success', 'Book deleted successfully.');
+    }
+
+    public function list()
+    {
+        $books = Book::with(['author', 'categories'])
+                     ->where('status', 'approved')
+                     ->latest()
+                     ->paginate(12);
+                     
+        return view('books.read', compact('books'));
     }
 }

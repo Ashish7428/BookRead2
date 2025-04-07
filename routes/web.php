@@ -6,10 +6,27 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\AdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthorController;
+// use App\Http\Controllers\Author\BookController;  // Updated namespace
 use App\Http\Controllers\BookController;
+use App\Models\Book;
+use App\Http\Controllers\Admin\AuthorManagementController;
+
 
 Route::get('/', function () {
-    return view('welcome');
+    $query = Book::where('status', 'approved');
+    
+    if (request('search')) {
+        $search = request('search');
+        $query->where(function($q) use ($search) {
+            $q->where('title', 'like', "%{$search}%")
+              ->orWhereHas('author', function($q) use ($search) {
+                  $q->where('full_name', 'like', "%{$search}%"); // Changed from 'name' to 'full_name'
+              });
+        });
+    }
+    
+    $books = $query->latest()->take(8)->get();
+    return view('welcome', compact('books'));
 });
 
 // Authentication Routes
@@ -29,17 +46,13 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Admin Routes
 // Update the admin login route
-Route::get('/admin/login', function () {
+Route::get('/admin', function () {
     return view('auth.admin-login');
 })->name('admin.login.form');  // This matches the route name used in navbar
 
 Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login');
-Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
 
-// Update the dashboard route to include both auth and revalidate middleware
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware('auth')->name('dashboard');
+Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
 
 // Add these routes with your other authenticated routes
 Route::middleware('auth')->group(function () {
@@ -51,10 +64,31 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile/change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
         Route::put('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
     });
-    // Remove or comment out this route
-    // Route::get('/become-author', function () {
-    //     return view('become-author');
-    // })->middleware('auth')->name('become-author');
+   
+});
+
+// Add user dashboard route
+Route::middleware(['auth'])->group(function () {
+    // Remove all duplicate middleware groups and keep only one set of user routes
+    Route::middleware(['auth'])->group(function () {
+        // Profile routes
+        Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+        Route::get('/profile/change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
+        Route::put('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+    
+        // Dashboard
+        Route::middleware(['auth'])->group(function () {
+            Route::get('/dashboard', [App\Http\Controllers\User\DashboardController::class, 'index'])->name('user.dashboard');
+        });
+        
+        // Books - Make sure these routes are in the correct order
+        Route::get('/books/browse', [App\Http\Controllers\User\BookController::class, 'browse'])->name('books.browse');
+        Route::get('/books/{book}/read', [App\Http\Controllers\User\BookController::class, 'read'])->name('books.read');
+        Route::get('/books/{book}/page/{page}', [App\Http\Controllers\User\BookController::class, 'getPage'])->name('books.page');
+        Route::get('/books/{book}', [App\Http\Controllers\User\BookController::class, 'show'])->name('books.show');
+    });
 });
 
 // Author Routes
@@ -66,16 +100,12 @@ Route::middleware('auth:author')->group(function () {
     Route::put('/author/profile', [AuthorController::class, 'update'])->name('author.profile.update');
     Route::get('/author/profile/change-password', [AuthorController::class, 'changePassword'])->name('author.profile.change-password');
     Route::put('/author/profile/change-password', [AuthorController::class, 'updatePassword'])->name('author.profile.update-password');
-    Route::middleware(['auth:author'])->group(function () {
-        Route::resource('author/books', BookController::class)->names([
-            'index' => 'author.books.index',
-            'create' => 'author.books.create',
-            'store' => 'author.books.store',
-            'edit' => 'author.books.edit',
-            'update' => 'author.books.update',
-            'destroy' => 'author.books.destroy',
-        ]);
-    });
+    
+    // Book routes with updated controller
+     // Update this line
+    
+    // In your routes
+    Route::resource('author/books', BookController::class, ['as' => 'author']);
 });
 Route::get('/author/login', function () {
     return view('auth.author-login');
@@ -94,6 +124,7 @@ use App\Http\Controllers\Admin\CategoryController;
 
 Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/admin/author', [AuthorManagementController::class, 'index'])->name('admin.author');
     Route::get('/admin/books', [BookManagementController::class, 'index'])->name('admin.books.index');
     Route::post('/admin/books/{book}/approve', [BookManagementController::class, 'approve'])->name('admin.books.approve');
     Route::post('/admin/books/{book}/reject', [BookManagementController::class, 'reject'])->name('admin.books.reject');
@@ -103,4 +134,9 @@ Route::middleware(['auth:admin'])->group(function () {
         'update' => 'admin.categories.update',
         'destroy' => 'admin.categories.destroy',
     ]);
+    Route::post('/admin/password/update', [AdminController::class, 'updatePassword'])->name('admin.password.update');
 });
+// Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/books', [BookController::class, 'list'])->name('books.index');

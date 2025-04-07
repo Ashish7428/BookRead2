@@ -1,43 +1,47 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 text-center">
-            <h1 class="display-4 mb-4">Welcome to E-Library</h1>
-            <p class="lead mb-4">Your gateway to endless knowledge and entertainment</p>
-            <div class="row justify-content-center">
-                <div class="col-md-4 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Vast Collection</h5>
-                            <p class="card-text">Access thousands of books across various genres</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Easy Access</h5>
-                            <p class="card-text">Read anywhere, anytime on any device</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Free Registration</h5>
-                            <p class="card-text">Join our community of readers today</p>
-                        </div>
-                    </div>
-                </div>
+<div class="container py-4">
+    <div class="text-center mb-5">
+        <h1 class="display-4">Welcome to Book Reader</h1>
+        <p class="lead text-muted">Your gateway to endless knowledge and reading pleasure</p>
+    </div>
+
+    <div class="row">
+        @foreach($books as $book)
+            <div class="col-md-3 mb-4">
+                @include('components.book-card', ['book' => $book])
             </div>
-        </div>
+        @endforeach
     </div>
 </div>
-<div class="text-center mt-3">
-    <a href="{{ route('author.login') }}" class="btn btn-outline-primary">
-        <i class="fas fa-feather-alt me-2"></i>Author Login
-    </a>
-</div>
+
+@push('styles')
+<style>
+.book-card {
+    transition: transform 0.3s ease;
+    height: 100%;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.book-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.book-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+.book-card .card-body {
+    padding: 1rem;
+}
+.categories {
+    margin-top: 0.5rem;
+}
+.categories .badge {
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+</style>
+@endpush
 @endsection

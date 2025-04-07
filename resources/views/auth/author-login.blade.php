@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+<br>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow-lg border-0">
-                <div class="card-header bg-primary text-white text-center py-3">
+                <div class="card-header  text-white text-center py-3" style="background-color:#2c3e50;">
                     <h4 class="mb-0"><i class="fas fa-feather-alt me-2"></i>Author Login</h4>
                 </div>
                 <div class="card-body p-4">
@@ -35,7 +36,7 @@
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Login</button>
+                            <button type="submit" class="btn" style="background-color:#2c3e50;color:white;">Login</button>
                         </div>
                     </form>
 
@@ -49,3 +50,9 @@
     </div>
 </div>
 @endsection
+
+<style>
+    .container{
+        margin-bottom:18px;
+    }
+</style>

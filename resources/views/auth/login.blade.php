@@ -4,8 +4,15 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+            
             <div class="card shadow">
-                <div class="card-header bg-primary text-white">
+                <div style="background-color:#2c3e50;" class="card-header  text-white" >
                     <h4 class="mb-0">Login</h4>
                 </div>
                 <div class="card-body">
@@ -29,13 +36,10 @@
                             @enderror
                         </div>
 
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                            <label class="form-check-label" for="remember">Remember Me</label>
-                        </div>
+                        <!-- Remove the remember me checkbox section -->
 
                         <div class="mb-0">
-                            <button type="submit" class="btn btn-primary">Login</button>
+                            <button type="submit" class="btn btn-custom" style="background-color:#2c3e50;color:white;">Login</button>
                             <a href="{{ route('register') }}" class="btn btn-link">Need an account?</a>
                         </div>
                     </form>
@@ -45,3 +49,10 @@
     </div>
 </div>
 @endsection
+
+<style>
+    /* .btn-custom {
+        background-color: #2c3e50;
+        color: white;
+    } */
+</style>

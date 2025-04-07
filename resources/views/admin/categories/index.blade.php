@@ -19,10 +19,7 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3">{{ old('description') }}</textarea>
-                        </div>
+                       
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save me-2"></i>Save Category
                         </button>
@@ -50,7 +47,7 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Slug</th>
-                                    <th>Description</th>
+                                    {{-- <th>Description</th> --}}
                                     <th>Books</th>
                                     <th>Actions</th>
                                 </tr>
@@ -60,7 +57,7 @@
                                     <tr>
                                         <td>{{ $category->name }}</td>
                                         <td><code>{{ $category->slug }}</code></td>
-                                        <td>{{ Str::limit($category->description, 50) }}</td>
+                                        {{-- <td>{{ Str::limit($category->description, 50) }}</td> --}}
                                         <td>{{ $category->books_count ?? 0 }}</td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-primary" 
@@ -99,13 +96,6 @@
                                                                 name="name" 
                                                                 value="{{ $category->name }}" required>
                                                         </div>
-                                                        <div class="mb-3">
-                                                            <label for="edit_description{{ $category->id }}" class="form-label">Description</label>
-                                                            <textarea class="form-control" 
-                                                                id="edit_description{{ $category->id }}" 
-                                                                name="description" 
-                                                                rows="3">{{ $category->description }}</textarea>
-                                                        </div>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -132,3 +122,4 @@
     </div>
 </div>
 @endsection
+

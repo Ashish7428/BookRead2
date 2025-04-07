@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Book;  // Update this import
 use App\Models\Author;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Category;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthorController extends Controller
 {
+    
+
     public function register(Request $request)
     {
         $request->validate([
@@ -59,15 +63,35 @@ class AuthorController extends Controller
         return redirect('/');
     }
 
+    // Remove the first dashboard method and keep only this one
     public function dashboard()
     {
         $author = Auth::guard('author')->user();
-        $totalBooks = $author->books()->count();
-        $pendingBooks = $author->books()->where('status', 'pending')->count();
-        $recentBooks = $author->books()->with('author')->latest()->take(5)->get();
-        $totalViews = 0; // We'll implement view counting later
         
-        return view('author.dashboard', compact('author', 'totalBooks', 'pendingBooks', 'totalViews', 'recentBooks'));
+        if (!$author) {
+            return redirect()->route('author.login');
+        }
+        
+        $books = Book::where('author_id', $author->id)
+                 ->with('category')  // Make sure we're using 'category' not 'genres'
+                 ->latest()
+                 ->get();
+        
+        $totalBooks = $books->count();
+        $publishedBooks = $books->where('status', 'approved')->count();
+        $pendingBooks = $books->where('status', 'pending')->count();
+        $totalViews = $books->sum('views');
+        $recentBooks = $books->take(5);
+        
+        return view('author.dashboard', compact(
+            'books',
+            'totalBooks',
+            'publishedBooks',
+            'pendingBooks',
+            'totalViews',
+            'recentBooks',
+            'author'
+        ));
     }
 
     public function profile()
@@ -86,32 +110,50 @@ class AuthorController extends Controller
     {
         $author = Auth::guard('author')->user();
         
-        $request->validate([
+        $validated = $request->validate([
             'full_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:authors,email,' . $author->id,
             'phone' => 'required|string|size:10|regex:/^[0-9]+$/',
-            'username' => 'required|string|max:255|unique:authors,username,' . $author->id,
-            'bio' => 'nullable|string|max:500',
+            // username validation removed
+            'bio' => 'nullable|string|max:1000',
             'facebook_url' => 'nullable|url',
             'twitter_url' => 'nullable|url',
             'instagram_url' => 'nullable|url',
             'linkedin_url' => 'nullable|url',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        $author->update([
-            'full_name' => $request->full_name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'username' => $request->username,
-            'bio' => $request->bio,
-            'facebook_url' => $request->facebook_url,
-            'twitter_url' => $request->twitter_url,
-            'instagram_url' => $request->instagram_url,
-            'linkedin_url' => $request->linkedin_url,
-        ]);
+        try {
+            $updateData = [
+                'full_name' => $request->full_name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                // username removed from update data
+                'bio' => $request->bio,
+                'facebook_url' => $request->facebook_url,
+                'twitter_url' => $request->twitter_url,
+                'instagram_url' => $request->instagram_url,
+                'linkedin_url' => $request->linkedin_url,
+            ];
 
-        return redirect()->route('author.profile')
-            ->with('success', 'Profile updated successfully.');
+            // Debug the update data
+            \Log::info('Update Data:', $updateData);
+
+            $updated = $author->update($updateData);
+            
+            // Debug the result
+            \Log::info('Update Result:', ['success' => $updated]);
+
+            if (!$updated) {
+                return back()->with('error', 'Failed to update profile.');
+            }
+
+            return redirect()->route('author.profile')
+                ->with('success', 'Profile updated successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Profile Update Error:', ['error' => $e->getMessage()]);
+            return back()->with('error', 'An error occurred while updating profile: ' . $e->getMessage());
+        }
     }
 
     public function changePassword()
@@ -138,5 +180,21 @@ class AuthorController extends Controller
     
         return redirect()->route('author.profile')
             ->with('success', 'Password changed successfully.');
+    }
+
+    public function index()
+    {
+        $author = Auth::guard('author')->user();
+        
+        if (!$author) {
+            return redirect()->route('author.login');
+        }
+        
+        $books = Book::where('author_id', $author->id)
+                     ->with('category')
+                     ->latest()
+                     ->get() ?? collect();
+        
+        return view('author.books.index', compact('books'));
     }
 }
