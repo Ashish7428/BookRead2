@@ -10,23 +10,24 @@ use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\BookController;
 use App\Models\Book;
 use App\Http\Controllers\Admin\AuthorManagementController;
+use App\Http\Controllers\BookmarkController;
 
 
 Route::get('/', function () {
+    $search = request('search');
     $query = Book::where('status', 'approved');
     
-    if (request('search')) {
-        $search = request('search');
+    if ($search) {
         $query->where(function($q) use ($search) {
             $q->where('title', 'like', "%{$search}%")
               ->orWhereHas('author', function($q) use ($search) {
-                  $q->where('full_name', 'like', "%{$search}%"); // Changed from 'name' to 'full_name'
+                  $q->where('full_name', 'like', "%{$search}%");
               });
         });
     }
     
     $books = $query->latest()->take(8)->get();
-    return view('welcome', compact('books'));
+    return view('welcome', compact('books', 'search'));
 });
 
 // Authentication Routes
@@ -63,6 +64,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
         Route::get('/profile/change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
         Route::put('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+    
     });
    
 });
@@ -88,6 +90,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/books/{book}/read', [App\Http\Controllers\User\BookController::class, 'read'])->name('books.read');
         Route::get('/books/{book}/page/{page}', [App\Http\Controllers\User\BookController::class, 'getPage'])->name('books.page');
         Route::get('/books/{book}', [App\Http\Controllers\User\BookController::class, 'show'])->name('books.show');
+        Route::post('/books/{book}/save-progress', [App\Http\Controllers\User\BookController::class, 'saveProgress']);
     });
 });
 
@@ -136,7 +139,8 @@ Route::middleware(['auth:admin'])->group(function () {
     ]);
     Route::post('/admin/password/update', [AdminController::class, 'updatePassword'])->name('admin.password.update');
 });
-// Auth::routes();
+Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/books', [BookController::class, 'list'])->name('books.index');
+Route::post('/bookmark/{book}', [BookmarkController::class, 'toggle'])->name('bookmark.toggle');

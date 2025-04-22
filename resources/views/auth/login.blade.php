@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-5">
+<div class="container py-5 custom-container">
     <div class="row justify-content-center">
         <div class="col-md-6">
             @if(session('success'))
@@ -12,7 +12,7 @@
             @endif
             
             <div class="card shadow">
-                <div style="background-color:#2c3e50;" class="card-header  text-white" >
+                <div style="background-color:#000000;" class="card-header  text-white" >
                     <h4 class="mb-0">Login</h4>
                 </div>
                 <div class="card-body">
@@ -39,7 +39,8 @@
                         <!-- Remove the remember me checkbox section -->
 
                         <div class="mb-0">
-                            <button type="submit" class="btn btn-custom" style="background-color:#2c3e50;color:white;">Login</button>
+                            <button type="submit" class="btn btn-custom" style="background-color:#000000;color:white;">Login</button> <br>
+                            <a href="{{ route('password.request') }}" class="btn btn-link">Forgot Password?</a><br>
                             <a href="{{ route('register') }}" class="btn btn-link">Need an account?</a>
                         </div>
                     </form>
@@ -55,4 +56,7 @@
         background-color: #2c3e50;
         color: white;
     } */
+     .custom-container{
+        margin-bottom: 144px;
+     }
 </style>

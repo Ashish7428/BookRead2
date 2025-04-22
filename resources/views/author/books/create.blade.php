@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-dark text-white">
                     <h4 class="mb-0">Upload New Book</h4>
                 </div>
                 <div class="card-body">
@@ -85,7 +85,7 @@
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-dark">
                                 <i class="fas fa-upload me-2"></i>Upload Book
                             </button>
                             <a href="{{ route('author.books.index') }}" class="btn btn-outline-secondary">

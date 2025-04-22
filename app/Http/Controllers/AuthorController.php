@@ -8,6 +8,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthorController extends Controller
 {
@@ -137,12 +138,12 @@ class AuthorController extends Controller
             ];
 
             // Debug the update data
-            \Log::info('Update Data:', $updateData);
+            Log::info('Update Data:', $updateData);
 
-            $updated = $author->update($updateData);
+            $updated = Author::where('id', $author->id)->update($updateData);
             
             // Debug the result
-            \Log::info('Update Result:', ['success' => $updated]);
+            Log::info('Update Result:', ['success' => $updated]);
 
             if (!$updated) {
                 return back()->with('error', 'Failed to update profile.');
@@ -151,7 +152,7 @@ class AuthorController extends Controller
             return redirect()->route('author.profile')
                 ->with('success', 'Profile updated successfully.');
         } catch (\Exception $e) {
-            \Log::error('Profile Update Error:', ['error' => $e->getMessage()]);
+            Log::error('Profile Update Error:', ['error' => $e->getMessage()]);
             return back()->with('error', 'An error occurred while updating profile: ' . $e->getMessage());
         }
     }
@@ -174,7 +175,7 @@ class AuthorController extends Controller
             return back()->withErrors(['current_password' => 'The current password is incorrect.']);
         }
     
-        $author->update([
+        Author::where('id', $author->id)->update([
             'password' => Hash::make($request->password)
         ]);
     

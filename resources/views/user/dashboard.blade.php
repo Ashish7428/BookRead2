@@ -5,11 +5,11 @@
     <!-- Welcome Section -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card bg-primary text-white">
+            <div class="card bg-secondary text-white">
                 <div class="card-body p-4">
                     <div class="row align-items-center">
                         <div class="col-md-8">
-                            <h2 class="display-4">Welcome, {{ Auth::user()->first_name }}! 👋</h2>
+                            <h2 class="display-5">Welcome, {{ Auth::user()->first_name }}! 👋</h2>
                             <p class="lead mb-4">Ready to continue your reading journey?</p>
                             @if(isset($lastBook) && $lastBook)
                                 <a href="#" class="btn btn-light btn-lg">
@@ -134,58 +134,7 @@
         </div>
     </div>
 
-    <!-- Categories -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h3>Browse Categories 🎭</h3>
-            <div class="row g-3">
-                @foreach($categories as $category)
-                <div class="col-md-2 col-sm-4 col-6">
-                    <a href="#" class="text-decoration-none">
-                        <div class="card bg-light border-0 shadow-sm category-card text-center">
-                            <div class="card-body">
-                                <i class="{{ $category->icon }} fa-2x mb-2 text-primary"></i>
-                                <h5 class="card-title mb-0">{{ $category->name }}</h5>
-                                <small class="text-muted">{{ $category->books_count }} Books</small>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-
-    <!-- Categories section ends -->
-    
-    {{-- Commenting out Notifications section
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Notifications 🔔</h5>
-                </div>
-                <div class="card-body">
-                    @forelse($notifications as $notification)
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="notification-icon me-3">
-                                <i class="{{ $notification->icon }} fa-lg"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-1">{{ $notification->title }}</h6>
-                                <p class="text-muted small mb-0">{{ $notification->message }}</p>
-                            </div>
-                        </div>
-                    @empty
-                        <p class="text-muted text-center">No new notifications</p>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-    </div>
-    --}}
-
-    {{-- Reading Goals section remains commented out --}}
+  
 </div>
 
 @push('styles')

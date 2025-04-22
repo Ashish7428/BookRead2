@@ -8,16 +8,29 @@
     </div>
 
     <div class="row">
-        @foreach($books as $book)
-            <div class="col-md-3 mb-4">
-                @include('components.book-card', ['book' => $book])
+        @if($books->count() > 0)
+            @foreach($books as $book)
+                <div class="col-md-3 mb-4">
+                    <x-book-card :book="$book" />
+                </div>
+            @endforeach
+        @else
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    @if(request('search'))
+                        <h4>No books found for "{{ request('search') }}"</h4>
+                        <p>Try searching with different keywords or browse our collection.</p>
+                    @else
+                        <h4>No books available at the moment.</h4>
+                    @endif
+                </div>
             </div>
-        @endforeach
+        @endif
     </div>
 </div>
 
-@push('styles')
-<style>
+{{-- @push('styles') --}}
+{{-- <style>
 .book-card {
     transition: transform 0.3s ease;
     height: 100%;
@@ -42,6 +55,6 @@
     margin-right: 0.25rem;
     margin-bottom: 0.25rem;
 }
-</style>
-@endpush
+</style> --}}
+{{-- @endpush --}}
 @endsection

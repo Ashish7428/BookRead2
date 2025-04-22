@@ -1,11 +1,11 @@
-@extends('layouts.dashboard')
+@extends('layouts.app')
 
 @section('content')
-<div class="container py-4">
+<div class="container py-4 custom-container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Change Password</h4>
                     <a href="{{ route('profile.show') }}" class="btn btn-light btn-sm">
                         <i class="fas fa-arrow-left"></i> Back to Profile
@@ -52,7 +52,7 @@
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-dark">
                                 <i class="fas fa-key"></i> Change Password
                             </button>
                         </div>
@@ -62,4 +62,9 @@
         </div>
     </div>
 </div>
+<style>
+    .custom-container {
+        margin-bottom: 144px;
+    }
+</style>
 @endsection

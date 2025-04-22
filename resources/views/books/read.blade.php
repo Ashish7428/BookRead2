@@ -1,4 +1,4 @@
-@extends('layouts.app')
+{{-- @extends('layouts.app')
 
 @section('content')
 <div class="container py-4">
@@ -74,4 +74,4 @@ function changePage(page) {
 }
 </style>
 @endpush
-@endsection
+@endsection --}}

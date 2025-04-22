@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-5">
+<div class="container py-5 custom-container">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow">
@@ -38,4 +38,12 @@
         </div>
     </div>
 </div>
+
 @endsection
+
+<style>
+    .custom-container {
+        margin-bottom: 145px;                            
+    }
+
+</style>

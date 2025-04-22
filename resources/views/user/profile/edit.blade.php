@@ -1,14 +1,15 @@
+
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-4">
+<div class="container py-4 custom-container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <div class="card-header  d-flex justify-content-between align-items-center custom-heading">
                     <h4 class="mb-0">Edit Profile</h4>
                     <a href="{{ route('profile.show') }}" class="btn btn-light btn-sm">
-                        <i class="fas fa-arrow-left"></i> Back to Profile
+                        <i class="fas fa-arrow-left "></i> Back to Profile
                     </a>
                 </div>
 
@@ -81,7 +82,7 @@
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-dark">
                                 <i class="fas fa-save"></i> Update Profile
                             </button>
                         </div>
@@ -91,4 +92,17 @@
         </div>
     </div>
 </div>
+<style>
+    .custom-heading {
+        background-color: #000000;       
+        color: white;
+    }
+    .custom-i:hover {
+        color: rgb(0, 0, 0);
+        background-color: white;
+    }
+    .custom-container{
+        margin-bottom: 194px;
+    }
+    </style>
 @endsection

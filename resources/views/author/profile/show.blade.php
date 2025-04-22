@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-8 mx-auto">
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-dark text-white">
                     <h4 class="mb-0">Author Profile</h4>
                 </div>
                 <div class="card-body">
@@ -74,10 +74,10 @@
                     @endif
 
                     <div class="mt-4">
-                        <a href="{{ route('author.profile.edit') }}" class="btn btn-primary me-2">
+                        <a href="{{ route('author.profile.edit') }}" class="btn btn-dark me-2">
                             <i class="fas fa-edit me-2"></i>Edit Profile
                         </a>
-                        <a href="{{ route('author.profile.change-password') }}" class="btn btn-secondary">
+                        <a href="{{ route('author.profile.change-password') }}" class="btn btn-light">
                             <i class="fas fa-key me-2"></i>Change Password
                         </a>
                     </div>

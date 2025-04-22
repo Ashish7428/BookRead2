@@ -4,6 +4,11 @@
 <div class="container py-4">
     <div class="row">
         <!-- Book Cover and Primary Details -->
+        <div class="">
+            <a href="{{ url('/dashboard') }}" class="btn btn-danger btn-exit-custom">Back</a>
+
+        </div>
+        <hr>
         <div class="col-md-4 mb-4">
             <div class="card border-0 shadow-sm">
                 <img src="{{ asset($book->cover_image ?? 'images/default-book-cover.jpg') }}" 
@@ -11,7 +16,7 @@
                      alt="{{ $book->title }}"
                      style="height: 400px; object-fit: cover;">
                 <div class="card-body text-center">
-                    <a href="{{ route('books.read', ['book' => $book->id]) }}" class="btn btn-primary btn-lg w-100 mb-3">
+                    <a href="{{ route('books.read', ['book' => $book->id]) }}" class="btn btn-dark btn-lg w-100 mb-3">
                         <i class="fas fa-book-reader me-2"></i>Read Now
                     </a>
                 </div>
@@ -80,6 +85,10 @@
         background: #fff;
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .btn-exit-custom {
+        float: right;
+        margin-bottom: 10px
     }
 </style>
 @endpush

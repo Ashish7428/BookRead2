@@ -52,12 +52,12 @@ class AuthorSeeder extends Seeder
                 'bio' => 'Author of the Shiva Trilogy, known for blending mythology with history.',
             ],
             [
-                'username' => 'sachindev',
-                'full_name' => 'Sachin Dev',
-                'email' => 'sachin.dev@gmail.com',
+                'username' => 'khuswantsingh',
+                'full_name' => 'Khushwant Singh',
+                'email' => 'khuswant.singh@gmail.com',
                 'phone' => '9876543215',
                 'password' => Hash::make('Test@1234'),
-                'bio' => 'A promising new voice in Indian literature.',
+                'bio' => 'Khushwant Singh is India’s best-known writer and columnist. He has been founder-editor of Yojana, and editor of the Illustrated Weekly of India, the National Herald and the Hindustan Times. He is also the author of several books which include the novels I Shall Not Hear the Nightingale, Delhi, The Company of Women and Burial at Sea; the classic two-volume A History of the Sikhs; and a number of translations and non-fiction books on Sikh religion and culture, Delhi, nature, current affairs and Urdu poetry. His autobiography, Truth, Love and a Little Malice, was published in 2002.',
             ],
             [
                 'username' => 'jhumpalahiri',

@@ -22,7 +22,6 @@
                         <tr>
                             <th>Title</th>
                             <th>Author</th>
-                            <th>Genre</th>
                             <th>Status</th>
                             <th>Uploaded</th>
                             <th>Actions</th>
@@ -34,14 +33,13 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         @if($book->cover_image)
-                                            <img src="{{ Storage::url($book->cover_image) }}" 
+                                            <img src="{{ asset($book->cover_image ?? 'images/default-book-cover.jpeg') }}" 
                                                 alt="Cover" class="me-2" style="width: 40px; height: 40px; object-fit: cover;">
                                         @endif
                                         {{ $book->title }}
                                     </div>
                                 </td>
                                 <td>{{ $book->author->full_name }}</td>
-                                <td>{{ $book->genre }}</td>
                                 <td>
                                     <span class="badge bg-{{ $book->status === 'approved' ? 'success' : ($book->status === 'rejected' ? 'danger' : 'warning') }}">
                                         {{ ucfirst($book->status) }}

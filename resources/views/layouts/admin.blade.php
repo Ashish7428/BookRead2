@@ -3,15 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - BookReading</title>
+    <title>Admin Dashboard - Book Read</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .navbar-custom {
+            background-color: #000000;
+        }
+        
+            .navbar-logo {
+                object-fit: contain;
+                border-radius: 4px;
+                display: inline-block;
+                vertical-align: middle;
+            }
+        
+        .footer {
+            background-color: #000000;
+            color: white;
+            padding: 20px 0;
+            margin-top: auto;
+            width: 100%;
+            
+        }
+        .main-content {
+            padding-bottom: 2rem;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
         <div class="container-fluid">
+            <img src="{{asset('images/logo.jpg')}}" alt="Book Reader Logo" class="navbar-logo me-2" height="40">
+
             <a class="navbar-brand" href="{{ route('admin.dashboard') }}">
-                <i class="fas fa-book-reader me-2"></i>BookReading Admin
+                Book Reader
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>

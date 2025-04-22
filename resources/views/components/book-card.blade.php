@@ -1,6 +1,5 @@
-
 <div class="card h-100 book-card">
-    <img src="{{ asset($book->cover_image ?? 'images/default-book-cover.jpg') }}" 
+    <img src="{{ asset($book->cover_image ?? 'images/default-book-cover.jpeg') }}" 
          class="card-img-top"
          alt="{{ $book->title }}"
          style="height: 350px; object-fit: cover;">
@@ -27,29 +26,16 @@
             <small class="text-muted">By {{ $book->author_name ?? ($book->author->full_name ?? 'Unknown Author') }}</small>
         </p>
     </div>
-    <div class="card-footer">
-        <a href="{{ route('books.show', $book) }}" style="background-color:#2c3e50;"  class="btn btn-outline-light w-100 anchor-custom">
+    <div class="card-footer d-flex gap-2">
+        <a href="{{ route('books.show', $book) }}" class="btn btn-outline-light flex-grow-1 anchor-custom">
             Read Now
         </a>
+        <button class="btn btn-outline-dark bookmark-btn {{ $book->bookmarks->where('user_id', auth()->id())->count() ? 'active' : '' }}" 
+                onclick="toggleBookmark({{ $book->id }}, this)">
+            <i class="bookmark-icon {{ $book->bookmarks->where('user_id', auth()->id())->count() ? 'fas' : 'far' }} fa-bookmark"></i>
+        </button>
     </div>
 </div>
-
-<!-- Description Modal -->
-@if(strlen($book->description) > 100)
-    <div class="modal fade" id="description-{{ $book->id }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{ $book->title }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>{{ $book->description }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-@endif
 
 @push('styles')
 <style>
@@ -67,12 +53,64 @@
         text-decoration: underline;
     }
 
-    /* .anchor-custom {
-           background-color: #2c3e50; 
-    } */
+    .anchor-custom {
+           background-color: #000000; 
+    }
     .anchor-custom:hover {
-           color: #2c3e50;
-           background-color: white;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        outline:2px double #2c3e50;
    }
+    .bookmark-btn {
+        border-color: #000;
+        color: #000;
+    }
+    .bookmark-btn:hover {
+        background-color: transparent;
+        color: #000;
+    }
+    .bookmark-btn.active .bookmark-icon {
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+    }
 </style>
 @endpush
+
+@push('scripts')
+<script>
+    function toggleBookmark(bookId, btn) {
+        fetch(`/bookmark/${bookId}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const icon = btn.querySelector('.bookmark-icon');
+            btn.classList.toggle('active');
+            icon.classList.toggle('far');
+            icon.classList.toggle('fas');
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+@endpush
+
+<!-- Description Modal -->
+@if(strlen($book->description) > 100)
+    <div class="modal fade" id="description-{{ $book->id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ $book->title }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>{{ $book->description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif

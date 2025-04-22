@@ -15,24 +15,28 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Filters</h5>
-                    <form>
+                    <form action="{{ route('books.browse') }}" method="GET">
+                        <!-- Add search input -->
+                        <div class="mb-3">
+                            <label class="form-label">Search Books</label>
+                            <input type="text" name="search" class="form-control" 
+                                   placeholder="Search by title or author..." 
+                                   value="{{ request('search') }}">
+                        </div>
+                        
                         <div class="mb-3">
                             <label class="form-label">Category</label>
-                            <select class="form-select">
+                            <select class="form-select" name="category">
                                 <option value="">All Categories</option>
                                 @foreach($categories ?? [] as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Sort By</label>
-                            <select class="form-select">
-                                <option value="latest">Latest</option>
-                                <option value="popular">Most Popular</option>
-                                <option value="rating">Highest Rated</option>
-                            </select>
-                        </div>
+
+                        <button type="submit" class="btn w-100 btn-custom" >Apply Filters</button>
                     </form>
                 </div>
             </div>
@@ -55,8 +59,15 @@
             </div>
 
             <!-- Pagination -->
-            <div class="d-flex justify-content-center mt-4">
-                {{ $books->links() }}
+            <div class="mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <p class="text-muted mb-0">
+                        Showing {{ $books->firstItem() ?? 0 }} to {{ $books->lastItem() ?? 0 }} of {{ $books->total() }} books
+                    </p>
+                </div>
+                <div class="d-flex justify-content-center">
+                    {{ $books->links('pagination::bootstrap-5') }}
+                </div>
             </div>
         </div>
     </div>
@@ -69,6 +80,17 @@
     }
     .book-card:hover {
         transform: translateY(-5px);
+    }
+
+    .btn-custom{
+        color: white;
+        border: none;
+        background-color: #000000;
+    }
+    .btn-custom:hover{
+        color: rgb(0, 0, 0);
+        background-color: #fffcfc;
+        border: 1px solid #000000;
     }
 </style>
 @endpush

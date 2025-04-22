@@ -133,10 +133,10 @@
                             <span><i class="fas fa-book me-2"></i>Manage Books</span>
                             <i class="fas fa-chevron-right"></i>
                         </a>
-                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        {{-- <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                             <span><i class="fas fa-users me-2"></i>Manage Authors</span>
                             <i class="fas fa-chevron-right"></i>
-                        </a>
+                        </a> --}}
                     </div>
                 </div>
             </div>

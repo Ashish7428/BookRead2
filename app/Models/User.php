@@ -48,4 +48,14 @@ class User extends Authenticatable
     {
         return $this->roles()->attach(Role::where('slug', $role)->first());
     }
+
+    public function bookmarks()
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
+    public function bookmarkedBooks()
+    {
+        return $this->belongsToMany(Book::class, 'bookmarks');
+    }
 }

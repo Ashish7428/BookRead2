@@ -12,13 +12,30 @@ use setasign\Fpdi\Fpdi;
 
 class BookController extends Controller
 {
-    public function browse()
+    public function browse(Request $request)
     {
-        $books = Book::with(['categories', 'author'])
-                     ->where('status', 'approved')
-                     ->latest()
-                     ->paginate(12);
-                     
+        $query = Book::with(['categories', 'author'])
+                     ->where('status', 'approved');
+
+        // Apply search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhereHas('author', function($q) use ($search) {
+                      $q->where('full_name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Apply category filter
+        if ($request->filled('category')) {
+            $query->whereHas('categories', function($q) use ($request) {
+                $q->where('categories.id', $request->category);
+            });
+        }
+
+        $books = $query->latest()->paginate(6)->withQueryString();
         $categories = Category::all();
                          
         return view('user.books.browse', compact('books', 'categories'));
@@ -70,4 +87,14 @@ class BookController extends Controller
         $pdf = new Fpdi();
         return $pdf->setSourceFile($pdfPath);
     }
+    public function saveProgress(Request $request, Book $book)
+    {
+        $user = auth()->user();
+        $user->bookProgress()->updateOrCreate(
+            ['book_id' => $book->id],
+            ['last_page' => $request->page]
+        );
+        return response()->json(['success' => true]);
+    }
+
 }

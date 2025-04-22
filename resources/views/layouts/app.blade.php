@@ -8,30 +8,40 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .navbar-custom {
-            background-color: #2c3e50;
+            background-color: #000000;
         }
+        
+            .navbar-logo {
+                object-fit: contain;
+                border-radius: 4px;
+                display: inline-block;
+                vertical-align: middle;
+            }
+        
         .footer {
-            background-color: #2c3e50;
+            background-color: #000000;
             color: white;
             padding: 20px 0;
             margin-top: auto;
             width: 100%;
+            
         }
         .main-content {
             padding-bottom: 2rem;
         }
+        
     </style>
+    @stack('styles')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
     <body>
     @auth
         <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
             <div class="container">
-                <!-- Logo -->
-                <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-                    <i class="fas fa-book-reader me-2"></i>
-                    Book Reader
-                </a>
-
+                <div class="d-flex align-items-center me-4">
+                    <img src="{{asset('images/logo.jpg')}}" alt="Book Reader Logo" class="navbar-logo me-2" height="40">
+                    <a class="navbar-brand mb-0" href="{{ url('/') }}">Book Reader</a>
+                </div>
                 <!-- Mobile Toggle -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
                     <span class="navbar-toggler-icon"></span>
@@ -41,12 +51,12 @@
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <!-- Search Bar -->
                     <form class="d-flex mx-auto my-2 my-lg-0" style="min-width: 300px; max-width: 500px;">
-                        <div class="input-group">
+                        {{-- <div class="input-group">
                             <input class="form-control" type="search" placeholder="Search books, authors...">
                             <button class="btn btn-outline-light" type="submit">
                                 <i class="fas fa-search"></i>
                             </button>
-                        </div>
+                        </div> --}}
                     </form>
 
                     <!-- Navigation Links -->
@@ -117,7 +127,10 @@
         <!-- Original navbar for guests -->
         <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
             <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">Book Reader</a>
+                <div class="d-flex align-items-center me-4">
+                    <img src="{{asset('images/logo.jpg')}}" alt="Book Reader Logo" class="navbar-logo me-2" height="40">
+                    <a class="navbar-brand mb-0" href="{{ url('/') }}">Book Reader</a>
+                </div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>

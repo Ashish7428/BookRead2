@@ -14,7 +14,7 @@
             @endif
             
             <div class="card shadow">
-                <div class="card-header  text-white" style="background-color:#2c3e50;">
+                <div class="card-header  text-white" style="background-color:#000000;">
                     <h4 class="mb-0">Register</h4>
                 </div>
                 <div class="card-body">
@@ -92,7 +92,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <button type="submit" class="btn" style="background-color:#2c3e50;color:white;">Register</button>
+                            <button type="submit" class="btn" style="background-color:#000000;color:white;">Register</button>
                         </div>
                     </form>
                 </div>

@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-8 mx-auto">
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-dark text-white">
                     <h4 class="mb-0">Change Password</h4>
                 </div>
                 <div class="card-body">
@@ -38,7 +38,7 @@
                         </div>
 
                         <div class="mt-4">
-                            <button type="submit" class="btn btn-primary me-2">
+                            <button type="submit" class="btn btn-dark me-2">
                                 <i class="fas fa-key me-2"></i>Update Password
                             </button>
                             <a href="{{ route('author.profile') }}" class="btn btn-secondary">
