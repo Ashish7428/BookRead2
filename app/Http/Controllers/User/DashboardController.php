@@ -12,54 +12,45 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-        
+        $user = auth()->user();
+
         // Reading Statistics
         $currentlyReading = ReadingProgress::where('user_id', $user->id)
             ->where('status', 'reading')
             ->count();
-            
+
         $completedBooks = ReadingProgress::where('user_id', $user->id)
             ->where('status', 'completed')
             ->count();
-            
+
         $readingHours = ReadingProgress::where('user_id', $user->id)
             ->sum('reading_time') ?? 0;
-            
+
         $reviewsCount = $user->reviews()->count() ?? 0;
-        
-        // Last Book
+
+        // Last Book (currently reading)
         $lastBook = ReadingProgress::where('user_id', $user->id)
             ->where('status', 'reading')
             ->latest()
             ->first()?->book;
-            
-        // My Books
+
+        // My Books (recent reading progress)
         $myBooks = ReadingProgress::where('user_id', $user->id)
             ->with('book')
             ->latest()
             ->take(4)
             ->get();
-            
-        // Trending Books
+
+        // Trending Books (based on views)
         $trendingBooks = Book::join('authors', 'books.author_id', '=', 'authors.id')
             ->select('books.*', 'authors.full_name as author_name')
             ->where('status', 'approved')
             ->orderBy('views', 'desc')
-            ->take(6)
+            ->take(8)
             ->get();
-            
-        // Categories
-        $categories = Category::withCount('books')
-            ->get();
-            
-        // Comment out Reading Goals section
-        // $yearlyGoal = $user->reading_goal ?? 12;
-        // $booksRead = $completedBooks;
-        // $goalProgress = $yearlyGoal > 0 ? round(($booksRead / $yearlyGoal) * 100) : 0;
 
-        // Remove or comment out this line
-        // $notifications = collect([]);
+        // Categories with book counts
+        $categories = Category::withCount('books')->get();
 
         return view('user.dashboard', compact(
             'currentlyReading',
@@ -70,7 +61,6 @@ class DashboardController extends Controller
             'myBooks',
             'trendingBooks',
             'categories'
-            // 'notifications' removed from here
         ));
     }
 }

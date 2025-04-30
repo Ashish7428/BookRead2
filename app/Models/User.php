@@ -58,4 +58,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Book::class, 'bookmarks');
     }
+
+    public function readingProgress()
+    {
+        return $this->hasMany(ReadingProgress::class);
+    }
+
+    public function books()
+    {
+        return $this->hasManyThrough(Book::class, ReadingProgress::class, 'user_id', 'id', 'id', 'book_id');
+    }
 }

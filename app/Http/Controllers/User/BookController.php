@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Author;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ReadingProgress;
 use setasign\Fpdi\Fpdi;
 
 class BookController extends Controller
@@ -35,7 +36,7 @@ class BookController extends Controller
             });
         }
 
-        $books = $query->latest()->paginate(6)->withQueryString();
+        $books = $query->latest()->paginate(8)->withQueryString();
         $categories = Category::all();
                          
         return view('user.books.browse', compact('books', 'categories'));
@@ -53,15 +54,46 @@ class BookController extends Controller
     public function read(Book $book)
     {
         $pdfPath = base_path('public/storage/' . $book->pdf_path);
-        $currentPage = max(1, request()->query('page', 1));
-        
         $pdf = new Fpdi();
         $pageCount = $pdf->setSourceFile($pdfPath);
         
-        // Ensure current page doesn't exceed total pages
-        $currentPage = min($currentPage, $pageCount);
+        // Get or create reading progress
+        $progress = ReadingProgress::firstOrCreate(
+            [
+                'user_id' => auth()->id(),
+                'book_id' => $book->id
+            ],
+            [
+                'status' => 'reading',
+                'total_pages' => $pageCount,
+                'current_page' => 1,
+                'progress' => 0
+            ]
+        );
+        
+        $currentPage = max(1, $progress->current_page);
         
         return view('user.books.read', compact('book', 'currentPage', 'pageCount'));
+    }
+
+    public function saveProgress(Request $request, Book $book)
+    {
+        $progress = ReadingProgress::where('user_id', auth()->id())
+            ->where('book_id', $book->id)
+            ->first();
+            
+        if ($progress) {
+            $currentPage = $request->page;
+            $percentComplete = ($currentPage / $progress->total_pages) * 100;
+            
+            $progress->update([
+                'current_page' => $currentPage,
+                'progress' => $percentComplete,
+                'status' => $currentPage >= $progress->total_pages ? 'completed' : 'reading'
+            ]);
+        }
+        
+        return response()->json(['success' => true]);
     }
 
     public function getPage(Book $book, $page)
@@ -87,14 +119,4 @@ class BookController extends Controller
         $pdf = new Fpdi();
         return $pdf->setSourceFile($pdfPath);
     }
-    public function saveProgress(Request $request, Book $book)
-    {
-        $user = auth()->user();
-        $user->bookProgress()->updateOrCreate(
-            ['book_id' => $book->id],
-            ['last_page' => $request->page]
-        );
-        return response()->json(['success' => true]);
-    }
-
 }

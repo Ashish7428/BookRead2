@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container custom-container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
@@ -15,9 +15,20 @@
                     @endif
 
                     {{ __('You are logged in!') }}
+                    
+                    <div class="text-center mt-4">
+                        <a href="{{ route('user.dashboard') }}" class="btn btn-primary">Continue Browsing</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 @endsection
+
+<style>
+    .custom-container {
+        margin-top: 100px;
+        margin-bottom: 320px;
+    }
+</style>

@@ -13,7 +13,9 @@ class ReadingProgress extends Model
         'book_id',
         'status',
         'progress',
-        'reading_time'
+        'reading_time',
+        'total_pages',
+        'current_page'
     ];
 
     public function user()

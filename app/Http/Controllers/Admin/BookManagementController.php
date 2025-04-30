@@ -8,9 +8,21 @@ use Illuminate\Http\Request;
 
 class BookManagementController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $books = Book::with('author')->latest()->get();
+        $query = Book::query()->with('author');
+        
+        if ($request->has('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('title', 'like', '%' . $searchTerm . '%')
+                  ->orWhereHas('author', function($q) use ($searchTerm) {
+                      $q->where('full_name', 'like', '%' . $searchTerm . '%');
+                  });
+            });
+        }
+        
+        $books = $query->latest()->get();
         return view('admin.books.index', compact('books'));
     }
 

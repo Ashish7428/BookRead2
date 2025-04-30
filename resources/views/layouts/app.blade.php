@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="user-auth" content="{{ Auth::check() ? 'true' : 'false' }}">
     <title>Book Reader - Your Digital Reading Companion</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -32,15 +36,16 @@
         
     </style>
     @stack('styles')
-    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
     <body>
     @auth
         <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
             <div class="container">
                 <div class="d-flex align-items-center me-4">
-                    <img src="{{asset('images/logo.jpg')}}" alt="Book Reader Logo" class="navbar-logo me-2" height="40">
-                    <a class="navbar-brand mb-0" href="{{ url('/') }}">Book Reader</a>
+                    <img src="{{asset('images/logo.jpg')}}" alt="Book Reader Logo" class="navbar-logo me-2" height="40" 
+                         onclick="window.location.href='{{ Auth::check() ? route('user.dashboard') : url('/') }}'" 
+                         style="cursor: pointer;">
+                    <a class="navbar-brand mb-0" href="{{ Auth::check() ? route('user.dashboard') : url('/') }}">Book Reader</a>
                 </div>
                 <!-- Mobile Toggle -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
@@ -50,22 +55,11 @@
                 <!-- Navbar Content -->
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <!-- Search Bar -->
-                    <form class="d-flex mx-auto my-2 my-lg-0" style="min-width: 300px; max-width: 500px;">
-                        {{-- <div class="input-group">
-                            <input class="form-control" type="search" placeholder="Search books, authors...">
-                            <button class="btn btn-outline-light" type="submit">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div> --}}
-                    </form>
+                   
 
                     <!-- Navigation Links -->
                     <ul class="navbar-nav ms-auto">
-                        {{-- <li class="nav-item">
-                            <a class="nav-link" href="{{ url('/') }}">
-                                <i class="fas fa-home me-1"></i> Home
-                            </a>
-                        </li> --}}
+                      
 
                         <!-- Categories Dropdown -->
                         <li class="nav-item dropdown">
@@ -199,5 +193,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @stack('scripts')
 </body>
 </html>

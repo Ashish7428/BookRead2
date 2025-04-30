@@ -6,6 +6,14 @@
         <div class="card-header bg-white">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="fas fa-books me-2"></i>Book Management</h5>
+                <div class="search-container">
+                    <form action="{{ route('admin.books.index') }}" method="GET" class="d-flex gap-2">
+                        <input type="text" name="search" class="form-control" placeholder="Search by title or author..." value="{{ request('search') }}">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
         <div class="card-body">
@@ -17,7 +25,7 @@
             @endif
 
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover" id="booksTable">
                     <thead>
                         <tr>
                             <th>Title</th>
@@ -84,8 +92,22 @@
     </div>
 </div>
 
+@push('styles')
+<style>
+    .search-container {
+        width: 400px;
+    }
+    .search-container form {
+        width: 100%;
+    }
+    .search-container .form-control {
+        flex: 1;
+    }
+</style>
+@endpush
 @push('scripts')
 <script>
+
     // Confirm before rejecting
     document.querySelectorAll('form[action*="reject"]').forEach(form => {
         form.addEventListener('submit', function(e) {

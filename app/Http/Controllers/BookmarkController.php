@@ -15,7 +15,11 @@ class BookmarkController extends Controller
 
         if ($bookmark) {
             $bookmark->delete();
-            return response()->json(['status' => 'removed']);
+            return response()->json([
+                'success' => true,
+                'status' => 'removed',
+                'message' => 'Bookmark removed successfully'
+            ]);
         }
 
         Bookmark::create([
@@ -23,6 +27,10 @@ class BookmarkController extends Controller
             'book_id' => $bookId
         ]);
 
-        return response()->json(['status' => 'added']);
+        return response()->json([
+            'success' => true,
+            'status' => 'added',
+            'message' => 'Bookmark added successfully'
+        ]);
     }
 }

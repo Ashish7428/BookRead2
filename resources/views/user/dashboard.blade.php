@@ -2,37 +2,6 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <!-- Welcome Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card bg-secondary text-white">
-                <div class="card-body p-4">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h2 class="display-5">Welcome, {{ Auth::user()->first_name }}! 👋</h2>
-                            <p class="lead mb-4">Ready to continue your reading journey?</p>
-                            @if(isset($lastBook) && $lastBook)
-                                <a href="#" class="btn btn-light btn-lg">
-                                    <i class="fas fa-book-open me-2"></i>
-                                    Continue Reading "{{ $lastBook->title }}"
-                                </a>
-                            @else
-                                <a href="{{ route('books.browse') }}" class="btn btn-light btn-lg">
-                                    <i class="fas fa-book me-2"></i>
-                                    Start Reading
-                                </a>
-                            @endif
-                        </div>
-                        {{-- <div class="col-md-4 text-center">
-                            <img src="{{ asset('images/reading-illustration.svg') }}" alt="Reading" class="img-fluid" style="max-height: 200px;">
-                        </div> --}}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Stats -->
     <div class="row mb-4">
         <div class="col-md-3">
             <div class="card bg-light border-0 shadow-sm">
@@ -76,21 +45,42 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3>My Library 📚</h3>
-                <a href="#" class="btn btn-outline-primary">View All</a>
+                <h3>My Library</h3>
+                <div>
+                    <a href="{{ route('books.browse') }}" class="btn btn-outline-primary">Browse More</a>
+                </div>
             </div>
-            <div class="row">
-                @forelse($myBooks ?? [] as $book)
-                <div class="col-md-3 mb-3">
+            <hr>
+            <div class="row" id="booksContainer">
+                @forelse($myBooks as $book)
+                <div class="col-md-3 mb-3 book-item {{ $loop->index >= 4 ? 'd-none' : '' }}">
                     <div class="card h-100 border-0 shadow-sm book-card">
-                        <img src="{{ $book->cover_image }}" class="card-img-top" alt="{{ $book->title }}">
+                        <img src="{{ asset($book->book->cover_image ?? 'images/default-book-cover.jpg') }}" 
+                             class="card-img-top" 
+                             alt="{{ $book->book->title ?? 'Book Cover' }}"
+                             style="height: 200px; object-fit: cover;">
                         <div class="card-body">
-                            <h5 class="card-title">{{ $book->title }}</h5>
-                            <p class="card-text text-muted">{{ $book->author }}</p>
+                            <h5 class="card-title">{{ $book->book->title ?? 'Untitled' }}</h5>
+                            <p class="card-text text-muted">By {{ $book->book->author->full_name ?? 'Unknown Author' }}</p>
                             <div class="progress mb-2" style="height: 5px;">
-                                <div class="progress-bar" role="progressbar" style="width: {{ $book->progress }}%"></div>
+                                <div class="progress-bar" 
+                                     role="progressbar" 
+                                     style="width: {{ $book->progress }}%"
+                                     aria-valuenow="{{ $book->progress }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                </div>
                             </div>
-                            <small class="text-muted">{{ $book->progress }}% completed</small>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">{{ $book->progress }}% completed</small>
+                                <span class="badge bg-{{ $book->status === 'completed' ? 'success' : ($book->status === 'in_progress' ? 'primary' : 'warning') }}">
+                                    {{ ucfirst(str_replace('_', ' ', $book->status)) }}
+                                </span>
+                            </div>
+                            <a href="{{ route('books.read', $book->book_id) }}" 
+                               class="btn btn-primary btn-sm w-100 mt-3">
+                                {{ $book->status === 'completed' ? 'Read Again' : 'Continue Reading' }}
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -115,7 +105,8 @@
     <!-- Trending Books -->
     <div class="row mb-4">
         <div class="col-12">
-            <h3>Trending Now 🚀</h3>
+            <h3>Trending Now</h3>
+            <hr>
             @if(isset($trendingBooks) && count($trendingBooks) > 0)
                 <div class="row">
                     @foreach($trendingBooks as $book)
@@ -162,21 +153,5 @@
 </style>
 @endpush
 
-@push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-<script>
-$(document).ready(function(){
-    $('.trending-carousel').owlCarousel({
-        loop: true,
-        margin: 20,
-        nav: true,
-        responsive: {
-            0: { items: 1 },
-            600: { items: 2 },
-            1000: { items: 4 }
-        }
-    });
-});
-</script>
-@endpush
+
 @endsection

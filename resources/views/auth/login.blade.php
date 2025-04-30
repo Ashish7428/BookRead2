@@ -40,7 +40,7 @@
 
                         <div class="mb-0">
                             <button type="submit" class="btn btn-custom" style="background-color:#000000;color:white;">Login</button> <br>
-                            <a href="{{ route('password.request') }}" class="btn btn-link">Forgot Password?</a><br>
+                            <a href="{{ route('password.request') }}" class="btn btn-link">Forgot Passsword?</a><br>
                             <a href="{{ route('register') }}" class="btn btn-link">Need an account?</a>
                         </div>
                     </form>
@@ -57,6 +57,6 @@
         color: white;
     } */
      .custom-container{
-        margin-bottom: 144px;
+        margin-bottom: 70px;
      }
 </style>

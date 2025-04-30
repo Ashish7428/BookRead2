@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\AdminController;
+use App\Http\Controllers\Auth\OtpVerificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthorController;
 // use App\Http\Controllers\Author\BookController;  // Updated namespace
@@ -62,7 +63,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
         Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-        Route::get('/profile/change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
+        Route::get('/profile/change-`password`', [ProfileController::class, 'changePassword'])->name('profile.change-password');
         Route::put('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
     
     });
@@ -140,7 +141,13 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('/admin/password/update', [AdminController::class, 'updatePassword'])->name('admin.password.update');
 });
 Auth::routes();
-
+// Route::post('/bookmark/{book}', [BookmarkController::class, 'toggle'])->name('bookmark.toggle');
+Route::post('/bookmark/{book}', [BookmarkController::class, 'toggle'])
+    ->middleware('auth')
+    ->name('bookmark.toggle');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/books', [BookController::class, 'list'])->name('books.index');
-Route::post('/bookmark/{book}', [BookmarkController::class, 'toggle'])->name('bookmark.toggle');
+
+
+Route::get('/verify-otp', [OtpVerificationController::class, 'showForm'])->name('otp.form');
+Route::post('/verify-otp', [OtpVerificationController::class, 'verifyOtp'])->name('otp.verify');

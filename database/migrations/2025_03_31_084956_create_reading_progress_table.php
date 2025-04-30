@@ -15,6 +15,7 @@ return new class extends Migration
             $table->enum('status', ['reading', 'completed', 'want_to_read']);
             $table->integer('progress')->default(0);
             $table->integer('reading_time')->default(0);
+            $table->timestamp('last_activity')->nullable();
             $table->timestamps();
         });
     }
