@@ -75,6 +75,53 @@
                     <p class="card-text">{{ $book->author->bio ?: 'No biography available.' }}</p>
                 </div>
             </div>
+
+            <!-- Comments Section -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">Comments & Ratings</h5>
+
+                    <!-- Display Average Rating -->
+                    <p class="mb-3">
+                        <strong>Average Rating:</strong> 
+                        {{ round($book->comments->avg('rating'), 1) ?? 'No ratings yet' }} / 5
+                    </p>
+
+                    <!-- Display Comments -->
+                    @forelse($book->comments as $comment)
+                        <div class="mb-3">
+                            <strong>{{ $comment->user->name }}</strong> 
+                            <span class="text-muted">({{ $comment->rating }} / 5)</span>
+                            <p>{{ $comment->comment }}</p>
+                        </div>
+                    @empty
+                        <p>No comments yet. Be the first to comment!</p>
+                    @endforelse
+
+                    <!-- Add Comment Form -->
+                    @auth
+                        <form action="{{ route('comments.store', $book) }}" method="POST">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="rating" class="form-label">Rating</label>
+                                <select name="rating" id="rating" class="form-select" required>
+                                    <option value="">Select Rating</option>
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <option value="{{ $i }}">{{ $i }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Comment</label>
+                                <textarea name="comment" id="comment" class="form-control" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    @else
+                        <p class="text-muted">Please <a href="{{ route('login') }}">log in</a> to leave a comment.</p>
+                    @endauth
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -89,6 +136,10 @@
     .btn-exit-custom {
         float: right;
         margin-bottom: 10px
+    }
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: bold;
     }
 </style>
 @endpush

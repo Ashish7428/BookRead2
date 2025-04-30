@@ -21,15 +21,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-light border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <i class="fas fa-clock fa-2x text-warning mb-2"></i>
-                    <h3 class="h2 mb-0">{{ $readingHours }}</h3>
-                    <p class="text-muted">Reading Hours</p>
-                </div>
-            </div>
-        </div>
+        
         <div class="col-md-3">
             <div class="card bg-light border-0 shadow-sm">
                 <div class="card-body text-center">

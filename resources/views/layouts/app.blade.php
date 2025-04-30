@@ -59,36 +59,6 @@
 
                     <!-- Navigation Links -->
                     <ul class="navbar-nav ms-auto">
-                      
-
-                        <!-- Categories Dropdown -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-tags me-1"></i> Categories
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Fiction</a></li>
-                                <li><a class="dropdown-item" href="#">Non-Fiction</a></li>
-                                <li><a class="dropdown-item" href="#">Mystery</a></li>
-                                <li><a class="dropdown-item" href="#">Science Fiction</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">All Categories</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- My Books -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-book me-1"></i> My Books
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Currently Reading</a></li>
-                                <li><a class="dropdown-item" href="#">Want to Read</a></li>
-                                <li><a class="dropdown-item" href="#">Completed</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">My Library</a></li>
-                            </ul>
-                        </li>
 
                         <!-- Profile Dropdown -->
                         <li class="nav-item dropdown">
@@ -137,9 +107,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/books') }}">Books</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url('/about') }}">About</a>
-                        </li>
+                        
                     </ul>
                                         <!-- Add search form if on welcome page -->
                                         @if(Request::is('/'))

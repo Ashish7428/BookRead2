@@ -12,6 +12,7 @@ use App\Http\Controllers\BookController;
 use App\Models\Book;
 use App\Http\Controllers\Admin\AuthorManagementController;
 use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\CommentController;
 
 
 Route::get('/', function () {
@@ -151,3 +152,5 @@ Route::get('/books', [BookController::class, 'list'])->name('books.index');
 
 Route::get('/verify-otp', [OtpVerificationController::class, 'showForm'])->name('otp.form');
 Route::post('/verify-otp', [OtpVerificationController::class, 'verifyOtp'])->name('otp.verify');
+
+Route::post('/books/{book}/comments', [CommentController::class, 'store'])->name('comments.store');

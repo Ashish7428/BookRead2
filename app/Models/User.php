@@ -68,4 +68,8 @@ class User extends Authenticatable
     {
         return $this->hasManyThrough(Book::class, ReadingProgress::class, 'user_id', 'id', 'id', 'book_id');
     }
+    public function comments()
+{
+    return $this->hasMany(Comment::class);
+}
 }

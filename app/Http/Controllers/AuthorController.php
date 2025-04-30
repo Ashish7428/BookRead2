@@ -28,7 +28,7 @@ class AuthorController extends Controller
             'full_name' => $request->full_name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'username' => $request->username,
+            'username' => $request->username, 
             'password' => Hash::make($request->password),
         ]);
 
