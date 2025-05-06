@@ -11,7 +11,8 @@
         <button onclick="jumpToPage()" class="btn btn-primary">Go</button>
         <button onclick="zoomIn()" class="btn btn-info mx-1"><i class="fas fa-search-plus"></i> Zoom In</button>
         <button onclick="zoomOut()" class="btn btn-info mx-1"><i class="fas fa-search-minus"></i> Zoom Out</button>
-        <a href="{{ url('/books/' . $book->id) }}" class="btn btn-danger btn-exit-custom">Exit</a>
+        {{-- <a href="{{ url('/books/' . $book->id) }}" class="btn btn-danger btn-exit-custom">Exit</a> --}}
+        <button onclick="exitWithSave()" class="btn btn-danger btn-exit-custom">Exit</button>
     </div>
     <div class="pdf-container">
         <canvas id="pdf-render"></canvas>
@@ -40,6 +41,46 @@
 </style>
 
 <script>
+    let bookId = {{ $book->id }};
+    let currentPage = {{ $currentPage }};
+
+    function autoSaveProgress() {
+        fetch(`/books/${bookId}/save-progress?page=${pageNum}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ page: pageNum })
+        }).then(response => {
+            if (response.ok) {
+                console.log('Auto-saved page:', pageNum);
+            } else {
+                console.warn('Failed to auto-save progress');
+            }
+        }).catch(err => {
+            console.error('Auto-save error:', err);
+        });
+    }
+
+    // Set interval to auto-save every minute (60000 ms)
+    setInterval(autoSaveProgress, 60000);
+
+    function exitWithSave() {
+        fetch(`/books/{{ $book->id }}/save-progress?page=${pageNum}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ page: pageNum })
+        }).finally(() => {
+            window.location.href = "{{ url('/books/' . $book->id) }}";
+        });
+    }
+
+
+
     const url = "{{ asset('storage/' . $book->pdf_path) }}";
     let pdfDoc = null,
         pageNum = {{ $currentPage }},
@@ -147,9 +188,7 @@
 </script>
 <style>
     .btn-exit-custom {
-        /* background-color: #dc3545; */
-        /* border-color: #dc3545; */
-        /* margin-left: 100px; */
+        
         float: right;
     }
 @endsection

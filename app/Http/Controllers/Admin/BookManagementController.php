@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Book;
 use Illuminate\Http\Request;
+use App\Jobs\SendBookApprovalEmail;
 
 class BookManagementController extends Controller
 {
@@ -29,8 +30,12 @@ class BookManagementController extends Controller
     public function approve(Book $book)
     {
         $book->update(['status' => 'approved']);
+        
+        // Dispatch the email job to the queue
+        SendBookApprovalEmail::dispatch($book);
+        
         return redirect()->route('admin.books.index')
-            ->with('success', 'Book has been approved successfully.');
+            ->with('success', 'Book has been approved successfully and author has been notified.');
     }
 
     public function reject(Book $book)

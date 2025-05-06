@@ -60,6 +60,11 @@
                     <!-- Navigation Links -->
                     <ul class="navbar-nav ms-auto">
 
+                      
+                        {{-- <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/mybooks') }}">My Books</a>
+                        </li> --}}
+
                         <!-- Profile Dropdown -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\ReadingProgress;
 use setasign\Fpdi\Fpdi;
+use App\Jobs\SaveReadingProgress;
 
 class BookController extends Controller
 {
@@ -78,21 +79,24 @@ class BookController extends Controller
 
     public function saveProgress(Request $request, Book $book)
     {
-        $progress = ReadingProgress::where('user_id', auth()->id())
-            ->where('book_id', $book->id)
-            ->first();
+        // $progress = ReadingProgress::where('user_id', auth()->id())
+        //     ->where('book_id', $book->id)
+        //     ->first();
             
-        if ($progress) {
-            $currentPage = $request->page;
-            $percentComplete = ($currentPage / $progress->total_pages) * 100;
+        // if ($progress) {
+        //     $currentPage = $request->page;
+        //     $percentComplete = ($currentPage / $progress->total_pages) * 100;
             
-            $progress->update([
-                'current_page' => $currentPage,
-                'progress' => $percentComplete,
-                'status' => $currentPage >= $progress->total_pages ? 'completed' : 'reading'
-            ]);
-        }
+        //     $progress->update([
+        //         'current_page' => $currentPage,
+        //         'progress' => $percentComplete,
+        //         'status' => $currentPage >= $progress->total_pages ? 'completed' : 'reading'
+        //     ]);
+        // }
         
+        // return response()->json(['success' => true]);
+
+        dispatch(new SaveReadingProgress(auth()->id(), $book->id, $request->page));
         return response()->json(['success' => true]);
     }
 
